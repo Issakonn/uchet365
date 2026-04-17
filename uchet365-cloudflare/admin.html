@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Учет-365 — Панель управления</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.5.0/css/all.min.css" />
+
+  <style>
+    :root {
+      --c-primary: #004a72;
+      --c-dark:    #002e4e;
+      --c-accent:  #0077b6;
+      --c-light:   #e8f4fd;
+      --c-white:   #ffffff;
+      --c-text:    #1a2a35;
+      --c-muted:   #5a7a8a;
+      --c-border:  #d0e6f5;
+      --c-ok:      #10b981;
+      --c-used:    #f43f5e;
+      --c-warn:    #f59e0b;
+      --radius:    12px;
+      --shadow:    0 4px 24px rgba(0,46,78,.13);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; }
+    body { font-family: 'Inter', sans-serif; background: #f0f6fb; color: var(--c-text); min-height: 100vh; }
+
+    .adm-header {
+      background: linear-gradient(135deg, var(--c-dark), var(--c-primary));
+      color: #fff;
+      padding: 0 24px;
+      min-height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      box-shadow: 0 2px 12px rgba(0,20,38,.3);
+      flex-wrap: wrap;
+    }
+    .adm-header-title { font-size: 1.1rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .adm-header-title i { color: #a8d8f0; }
+    .adm-header a {
+      font-size: .85rem;
+      color: rgba(255,255,255,.75);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: color .2s;
+    }
+    .adm-header a:hover { color: #fff; }
+
+    .adm-wrap { max-width: 1080px; margin: 40px auto; padding: 0 20px 80px; }
+
+    .auth-box {
+      background: linear-gradient(135deg, #ffffff, #f7fbff);
+      border: 1px solid var(--c-border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+    .auth-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .auth-title h2 { font-size: 1rem; color: var(--c-dark); }
+    .auth-help { color: var(--c-muted); font-size: .9rem; line-height: 1.6; margin-bottom: 16px; }
+    .auth-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto auto;
+      gap: 12px;
+      align-items: end;
+    }
+    .remember-line {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--c-muted);
+      font-size: .9rem;
+      margin-top: 12px;
+    }
+
+    .stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--c-white);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+      border-top: 4px solid var(--c-accent);
+      text-align: center;
+    }
+    .stat-card.ok  { border-color: var(--c-ok); }
+    .stat-card.bad { border-color: var(--c-used); }
+    .stat-num2 { font-size: 2.4rem; font-weight: 800; line-height: 1; }
+    .stat-num2.ok  { color: var(--c-ok); }
+    .stat-num2.bad { color: var(--c-used); }
+    .stat-num2.blue{ color: var(--c-accent); }
+    .stat-label { font-size: .82rem; color: var(--c-muted); margin-top: 6px; }
+
+    .adm-section {
+      background: var(--c-white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+      overflow: hidden;
+    }
+    .adm-section-header {
+      background: var(--c-dark);
+      color: #fff;
+      padding: 16px 24px;
+      font-size: .95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .adm-section-header small { color: rgba(255,255,255,.72); font-weight: 400; font-size: .8rem; }
+    .adm-section-body { padding: 24px; }
+
+    .add-form { display: flex; gap: 12px; flex-wrap: wrap; align-items: flex-end; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 180px; }
+    .form-group label, .field-label {
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--c-muted);
+      text-transform: uppercase;
+      letter-spacing: .07em;
+    }
+    .form-group input,
+    .form-group textarea,
+    .admin-input,
+    .admin-textarea {
+      padding: 10px 14px;
+      border: 1.5px solid var(--c-border);
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: .95rem;
+      color: var(--c-text);
+      background: #fafdff;
+      transition: border-color .2s, box-shadow .2s;
+      outline: none;
+      width: 100%;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .admin-input:focus,
+    .admin-textarea:focus {
+      border-color: var(--c-accent);
+      box-shadow: 0 0 0 3px rgba(0,119,182,.08);
+    }
+    .admin-textarea { min-height: 92px; resize: vertical; }
+
+    .btn-adm {
+      padding: 10px 22px;
+      background: var(--c-primary);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: .92rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: background .2s, transform .15s;
+      white-space: nowrap;
+      min-height: 42px;
+    }
+    .btn-adm:hover { background: var(--c-dark); transform: translateY(-1px); }
+    .btn-adm.secondary { background: #eff6ff; color: var(--c-primary); border: 1px solid #bfdbfe; }
+    .btn-adm.secondary:hover { background: #dbeafe; }
+
+    .btn-danger {
+      padding: 6px 14px;
+      background: #fff0f3;
+      color: var(--c-used);
+      border: 1.5px solid #fecdd3;
+      border-radius: 7px;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-danger:hover { background: var(--c-used); color: #fff; }
+
+    .bulk-area { width: 100%; height: 100px; resize: vertical; }
+
+    .adm-alert {
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-size: .9rem;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .adm-alert.success { background: #ecfdf5; color: #065f46; border: 1px solid #6ee7b7; }
+    .adm-alert.error   { background: #fff1f2; color: #9f1239; border: 1px solid #fecdd3; }
+    .adm-alert.info    { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+
+    .codes-table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    thead { background: var(--c-light); }
+    th { padding: 11px 14px; font-weight: 600; text-align: left; color: var(--c-primary); font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; }
+    td { padding: 12px 14px; border-bottom: 1px solid #eef4f9; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #f7fbff; }
+
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: .77rem; font-weight: 700; }
+    .badge-free { background: #ecfdf5; color: #065f46; }
+    .badge-used { background: #fff1f2; color: #9f1239; }
+    .badge-mode { background: #eef6ff; color: #1d4ed8; }
+    .badge-mode.local { background: #fff7ed; color: #9a3412; }
+
+    .code-mono { font-family: 'Courier New', monospace; font-size: 1rem; font-weight: 700; color: var(--c-dark); letter-spacing: .1em; }
+
+    .empty-state { text-align: center; padding: 48px 24px; color: var(--c-muted); }
+    .empty-state i { font-size: 2.5rem; margin-bottom: 12px; color: #cde4f5; }
+
+    .spinner {
+      width: 32px; height: 32px;
+      border: 3px solid var(--c-light);
+      border-top-color: var(--c-primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      margin: 40px auto;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .editor-grid { display: grid; gap: 18px; }
+    .editor-card {
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      padding: 16px;
+      background: #fbfdff;
+    }
+    .editor-card-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .editor-card-title { font-weight: 700; color: var(--c-dark); }
+    .editor-card-key { font-size: .78rem; color: var(--c-muted); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .editor-help { font-size: .88rem; color: var(--c-muted); margin-bottom: 14px; line-height: 1.6; }
+
+    .image-editor-grid { display: grid; gap: 18px; }
+    .image-editor-card {
+      border: 1px solid var(--c-border);
+      border-radius: 12px;
+      background: #fbfdff;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+    .image-preview {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 10px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e6f2fb, #cfe7f7);
+      border: 1px solid var(--c-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--c-muted);
+      font-size: .85rem;
+      text-align: center;
+      padding: 10px;
+    }
+    .image-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .image-fields { display: grid; gap: 12px; }
+
+    .actions-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .mode-note {
+      font-size: .84rem;
+      color: var(--c-muted);
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 860px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .image-editor-card { grid-template-columns: 1fr; }
+      .auth-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .add-form { flex-direction: column; }
+      .adm-header { padding: 14px 18px; }
+      .adm-wrap { margin-top: 24px; }
+      .adm-section-body { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="adm-header">
+    <div class="adm-header-title">
+      <i class="fas fa-sliders"></i>
+      Учет-365 — управление кодами, текстами и фотографиями
+    </div>
+    <a href="index.html"><i class="fas fa-arrow-left"></i> На сайт</a>
+  </header>
+
+  <main class="adm-wrap">
+    <div id="adm-notify"></div>
+
+    <section class="auth-box">
+      <div class="auth-title">
+        <h2><i class="fas fa-shield-halved"></i> Доступ к защищённой админ-панели</h2>
+        <span id="admin-auth-status" class="badge badge-mode local">Пароль не проверен</span>
+      </div>
+      <p class="auth-help">
+        Эта версия панели работает с настоящей серверной базой. Для входа нужен пароль администратора, который вы зададите при публикации сайта.
+      </p>
+      <div class="auth-row">
+        <div class="form-group">
+          <label for="admin-token">Пароль администратора</label>
+          <input type="password" id="admin-token" class="admin-input" placeholder="Введите ADMIN_TOKEN" autocomplete="current-password" />
+        </div>
+        <button class="btn-adm" id="connect-admin-btn"><i class="fas fa-plug"></i> Подключить</button>
+        <button class="btn-adm secondary" id="clear-admin-btn"><i class="fas fa-eraser"></i> Очистить</button>
+      </div>
+      <label class="remember-line">
+        <input type="checkbox" id="remember-token" checked />
+        Запомнить пароль в этом браузере
+      </label>
+      <div class="actions-row">
+        <button class="btn-adm secondary" id="refresh-all-btn"><i class="fas fa-rotate"></i> Обновить всю панель</button>
+      </div>
+    </section>
+
+    <div class="stats-row">
+      <div class="stat-card ok">
+        <div class="stat-num2 ok" id="stat-free">—</div>
+        <div class="stat-label">Свободных кодов</div>
+      </div>
+      <div class="stat-card bad">
+        <div class="stat-num2 bad" id="stat-used">—</div>
+        <div class="stat-label">Использованных кодов</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num2 blue" id="stat-total">—</div>
+        <div class="stat-label">Всего кодов</div>
+      </div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header"><span><i class="fas fa-plus-circle"></i> Добавить новый код</span></div>
+      <div class="adm-section-body">
+        <div class="add-form">
+          <div class="form-group">
+            <label for="new-code">Код</label>
+            <input type="text" id="new-code" placeholder="Например: 84712" maxlength="20" />
+          </div>
+          <div class="form-group">
+            <label for="new-note">Заметка (необязательно)</label>
+            <input type="text" id="new-note" placeholder="Например: Промо-акция апрель" maxlength="100" />
+          </div>
+          <button class="btn-adm" onclick="addSingleCode()">
+            <i class="fas fa-plus"></i> Добавить
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header"><span><i class="fas fa-layer-group"></i> Массовое добавление кодов</span></div>
+      <div class="adm-section-body">
+        <p class="editor-help">Введите коды через запятую или каждый с новой строки. Пример: <code>11111, 22222, 33333</code></p>
+        <textarea id="bulk-codes" class="admin-textarea bulk-area" placeholder="34521&#10;67843&#10;91247"></textarea>
+        <div class="actions-row">
+          <button class="btn-adm" onclick="addBulkCodes()"><i class="fas fa-upload"></i> Добавить всё</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header">
+        <span><i class="fas fa-file-lines"></i> Текстовая база сайта</span>
+        <small id="content-mode-badge-wrap"></small>
+      </div>
+      <div class="adm-section-body">
+        <p class="editor-help">Здесь редактируется текстовая информация о компании на сайте. Меняете текст в нужном поле и нажимаете «Сохранить текстовую базу».</p>
+        <div id="content-editor" class="editor-grid"><div class="spinner"></div></div>
+        <div class="actions-row">
+          <button class="btn-adm" onclick="saveAllContent()"><i class="fas fa-save"></i> Сохранить текстовую базу</button>
+          <button class="btn-adm secondary" onclick="loadSiteContentEditor()"><i class="fas fa-rotate"></i> Обновить список</button>
+        </div>
+        <p class="mode-note">Текст хранится в серверной базе. В локальный режим панель уйдёт только если сервер ещё не настроен.</p>
+      </div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header">
+        <span><i class="fas fa-image"></i> База фотографий сайта</span>
+        <small id="images-mode-badge-wrap"></small>
+      </div>
+      <div class="adm-section-body">
+        <p class="editor-help">Просто вставьте новую ссылку на изображение в нужное поле. Все изображения подписаны: например, «Картинка на главном экране», «Логотип сайта» и т.д.</p>
+        <div id="images-editor" class="image-editor-grid"><div class="spinner"></div></div>
+        <div class="actions-row">
+          <button class="btn-adm" onclick="saveAllImages()"><i class="fas fa-save"></i> Сохранить базу фотографий</button>
+          <button class="btn-adm secondary" onclick="loadImagesEditor()"><i class="fas fa-rotate"></i> Обновить список</button>
+        </div>
+        <p class="mode-note">Изображения хранятся в серверной базе. Для замены достаточно поменять URL и сохранить.</p>
+      </div>
+    </div>
+
+    <div class="adm-section">
+      <div class="adm-section-header"><span><i class="fas fa-list"></i> Все коды</span></div>
+      <div class="adm-section-body" style="padding:0">
+        <div class="codes-table-wrap" id="table-container">
+          <div class="spinner"></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/site-db.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

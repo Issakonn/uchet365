@@ -1,0 +1,12 @@
+name = "uchet365"
+compatibility_date = "2026-04-17"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "uchet365-db"
+database_id = "c954052c-86a9-4137-8388-5b9fa65da4df"
+
+[vars]
+SITE_NAME = "Учет-365"
+# ADMIN_TOKEN задаётся в Cloudflare Pages / Workers как Secret, а не здесь.
