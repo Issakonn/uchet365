@@ -5,7 +5,7 @@
 
 'use strict';
 
-const WHATSAPP_NUMBER = '87054950999';
+const WHATSAPP_NUMBER = '77054950999';
 
 let _activeCode = null;
 
